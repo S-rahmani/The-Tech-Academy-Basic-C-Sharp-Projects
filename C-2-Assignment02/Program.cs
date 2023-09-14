@@ -1,14 +1,18 @@
 ﻿using System;
 
-// Create an Employee class
-class Employee
+// Create an interface called IQuittable
+public interface IQuittable
 {
-    // Properties
+    void Quit();
+}
+
+// Modify the Employee class to implement the IQuittable interface
+public class Employee : IQuittable
+{
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 
-    // Constructor to initialize properties
     public Employee(int id, string firstName, string lastName)
     {
         Id = id;
@@ -16,16 +20,9 @@ class Employee
         LastName = lastName;
     }
 
-    // Overload the "==" operator to compare Employee objects by their Id property
-    public static bool operator ==(Employee emp1, Employee emp2)
+    public void Quit()
     {
-        return emp1.Id == emp2.Id;
-    }
-
-    // Overload the "!=" operator to complement the "==" operator
-    public static bool operator !=(Employee emp1, Employee emp2)
-    {
-        return !(emp1 == emp2);
+        Console.WriteLine($"{FirstName} {LastName} has quit the company.");
     }
 }
 
@@ -33,21 +30,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Instantiate two Employee objects with different Ids
-        Employee employee1 = new Employee(1, "John", "Doe");
-        Employee employee2 = new Employee(2, "Jane", "Smith");
+        // Create an Employee object
+        Employee employee = new Employee(1, "John", "Doe");
 
-        // Compare the two Employee objects using the overloaded "==" operator
-        if (employee1 == employee2)
-        {
-            Console.WriteLine("Employee 1 and Employee 2 have the same Id.");
-        }
-        else
-        {
-            Console.WriteLine("Employee 1 and Employee 2 have different Ids.");
-        }
+        // Create an object of type IQuittable using polymorphism
+        IQuittable quittableEmployee = employee;
 
-        // Keep the console window open to see the output
-        Console.ReadLine();
+        // Call the Quit method on the IQuittable object
+        quittableEmployee.Quit();
+
+        // The output will be: "John Doe has quit the company."
     }
 }
