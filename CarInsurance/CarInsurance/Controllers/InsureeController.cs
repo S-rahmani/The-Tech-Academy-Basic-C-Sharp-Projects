@@ -48,8 +48,58 @@ namespace CarInsurance.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,FirstName,LastName,EmailAddress,DateOfBirth,CarYear,CarMake,CarModel,DUI,SpeedingTickets,CoverageType,Quote")] Insuree insuree)
         {
+
             if (ModelState.IsValid)
             {
+                // Calculate the insurance quote based on the provided guidelines
+                decimal quote = 50; // Start with a base of $50 / month
+
+                if (insuree.DateOfBirth <= DateTime.Now.AddYears(-18))
+                {
+                    quote += 100; // Add $100 for users 18 or under
+                }
+                else if (insuree.DateOfBirth <= DateTime.Now.AddYears(-19))
+                {
+                    quote += 50; // Add $50 for users from 19 to 25
+                }
+                else
+                {
+                    quote += 25; // Add $25 for users 26 or older
+                }
+
+                if (insuree.CarYear < 2000)
+                {
+                    quote += 25; // Add $25 for cars before 2000
+                }
+                else if (insuree.CarYear > 2015)
+                {
+                    quote += 25; // Add $25 for cars after 2015
+                }
+
+                if (insuree.CarMake.ToLower() == "porsche")
+                {
+                    quote += 25; // Add $25 for Porsche cars
+
+                    if (insuree.CarModel.ToLower() == "911 carrera")
+                    {
+                        quote += 25; // Add an additional $25 for Porsche 911 Carrera
+                    }
+                }
+
+                quote += insuree.SpeedingTickets * 10; // Add $10 for each speeding ticket
+
+                if (insuree.DUI)
+                {
+                    quote *= 1.25m; // Add 25% for DUI
+                }
+
+                if (insuree.CoverageType) //if true its Full
+                {
+                    quote *= 1.5m; // Add 50% for full coverage
+                }
+
+                // Set the calculated quote and save to the database
+                insuree.Quote = quote;
                 db.Insurees.Add(insuree);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -123,5 +173,8 @@ namespace CarInsurance.Controllers
             }
             base.Dispose(disposing);
         }
+
+      
+    
     }
 }
